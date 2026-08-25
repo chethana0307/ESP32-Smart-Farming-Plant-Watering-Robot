@@ -1,14 +1,14 @@
 <div align="center">
 
-# 🌱 ESP32 Smart Farming Robot
+# 🌱 ESP32 Smart Farming & Plant Humidification Robot
 
-### An autonomous line-following robot that finds plants and waters them automatically
+### An autonomous line-following robot that finds plants and activates a humidifier automatically
 
 <p>
   <img src="https://img.shields.io/badge/Controller-ESP32-1B6B4A?style=for-the-badge" alt="ESP32">
   <img src="https://img.shields.io/badge/Platform-Arduino-2F8F6B?style=for-the-badge" alt="Arduino">
   <img src="https://img.shields.io/badge/Navigation-5_IR_Sensors-C9A227?style=for-the-badge" alt="5 IR Sensors">
-  <img src="https://img.shields.io/badge/Watering-RFID_Triggered-5A8F72?style=for-the-badge" alt="RFID Triggered">
+  <img src="https://img.shields.io/badge/Humidifier-RFID_Triggered-5A8F72?style=for-the-badge" alt="RFID-triggered humidifier">
 </p>
 
 <p>
@@ -27,25 +27,25 @@
 
 ## 🌾 About the Project
 
-This project is an **ESP32-powered smart farming robot** designed to automate plant watering. It follows a black path using five IR sensors and uses RFID tags to identify plant locations. When a tag is detected, the robot stops, activates a relay-controlled water pump for five seconds, and then continues along its route.
+This project is an **ESP32-powered smart farming robot** designed to automate plant humidification. It follows a black path using five IR sensors and uses RFID tags to identify plant-care locations. When a tag is detected, the robot stops, activates a relay-controlled humidifier for five seconds, and then continues along its route.
 
-The goal is to make routine plant care more efficient by combining robotics, navigation, location detection, and automated watering in one affordable system.
+The goal is to make routine plant care more efficient by combining robotics, navigation, location detection, and automatic humidification in one affordable system.
 
 <table>
   <tr>
     <td width="50%" valign="top">
       <h3>🎯 Mission</h3>
-      <p>Build a simple, affordable robot that can navigate between plants and water them consistently with minimal human effort.</p>
+      <p>Build a simple, affordable robot that can navigate between plants and provide controlled humidity with minimal human effort.</p>
     </td>
     <td width="50%" valign="top">
       <h3>🔭 Vision</h3>
-      <p>Develop the robot into an intelligent farming assistant that uses soil-moisture data, plant-specific watering, and wireless monitoring.</p>
+      <p>Develop the robot into an intelligent farming assistant that uses humidity data, plant-specific misting cycles, and wireless monitoring.</p>
     </td>
   </tr>
 </table>
 
 > [!IMPORTANT]
-> The current firmware starts watering when an **RFID tag** is detected. It does not yet read a humidity or soil-moisture sensor. Moisture-based watering is included in the future improvements section.
+> The current firmware activates the **humidifier when an RFID tag is detected**. It does not yet read a humidity sensor, so each tag currently starts a fixed five-second humidification cycle.
 
 ## ✨ Features
 
@@ -61,11 +61,11 @@ The goal is to make routine plant care more efficient by combining robotics, nav
       </ul>
     </td>
     <td width="50%" valign="top">
-      <h3>💧 Automatic Watering</h3>
+      <h3>💨 Automatic Humidification</h3>
       <ul>
         <li>RC522 RFID location detection</li>
-        <li>Automatic motor stop before watering</li>
-        <li>Relay-controlled five-second pump cycle</li>
+        <li>Automatic motor stop before humidifying</li>
+        <li>Relay-controlled five-second humidifier cycle</li>
         <li>Duplicate RFID-trigger prevention</li>
       </ul>
     </td>
@@ -85,7 +85,7 @@ The goal is to make routine plant care more efficient by combining robotics, nav
       <ul>
         <li>IR values in the Serial Monitor</li>
         <li>RFID UID output</li>
-        <li>Relay and watering status</li>
+        <li>Relay and humidifier status</li>
         <li>Lost-line and recovery messages</li>
       </ul>
     </td>
@@ -96,16 +96,16 @@ The goal is to make routine plant care more efficient by combining robotics, nav
 
 | **5** | **5 seconds** | **700 ms** | **115200** |
 |:---:|:---:|:---:|:---:|
-| IR sensors | Watering duration | RFID reset delay | Serial baud rate |
+| IR sensors | Humidifier run time | RFID reset delay | Serial baud rate |
 
 ## 🚜 How It Works
 
 1. **Scan the path** — five IR sensors continuously check for a black line on a white surface.
 2. **Follow the line** — the ESP32 adjusts the left and right motor speeds through the L298N driver.
-3. **Find a plant** — an RFID tag placed near each plant marks its watering location.
+3. **Find a plant** — an RFID tag placed near each plant marks its humidification location.
 4. **Stop safely** — RFID detection receives priority and immediately stops both motors.
-5. **Water the plant** — GPIO 32 activates the relay and pump for five seconds.
-6. **Resume the route** — the pump switches off and the robot continues line following.
+5. **Humidify the plant area** — GPIO 32 activates the relay and humidifier for five seconds.
+6. **Resume the route** — the humidifier switches off and the robot continues line following.
 7. **Recover when lost** — if all sensors see white, the robot searches using its last known turn direction for up to five seconds.
 
 ## 🔩 Hardware
@@ -114,15 +114,15 @@ The goal is to make routine plant care more efficient by combining robotics, nav
 |---|:---:|---|
 | ESP32 development board | 1 | Main controller |
 | Five-channel IR sensor array | 1 | Detects the black path |
-| RC522 RFID reader | 1 | Detects watering locations |
+| RC522 RFID reader | 1 | Detects plant-care locations |
 | RFID cards or tags | As needed | Marks plant locations |
 | L298N motor driver | 1 | Drives the left and right motors |
 | DC geared motors | 2 or 4 | Moves the robot |
-| One-channel relay module | 1 | Switches the water pump |
-| Mini DC water pump | 1 | Delivers water |
-| Water tank and tubing | 1 set | Stores and carries water |
+| One-channel relay module | 1 | Switches the humidifier |
+| Low-voltage humidifier or mist maker | 1 | Produces moisture around the plant |
+| Humidifier reservoir | 1 | Holds the water used to create mist |
 | Robot chassis and wheels | 1 set | Supports the system |
-| External power supply | 1 | Powers motors and pump |
+| External power supply | 1 | Powers the motors and humidifier |
 | Jumper wires | As needed | Makes electrical connections |
 
 ## 🔌 Wiring Guide
@@ -168,7 +168,7 @@ The program expects **black = LOW (`0`)** and **white = HIGH (`1`)**.
 > [!WARNING]
 > The RC522 is a **3.3 V device**. Do not connect its power pin to 5 V.
 
-### Relay and Water Pump
+### Relay and Humidifier
 
 | Relay pin | Connection |
 |---|---|
@@ -183,7 +183,10 @@ const int RELAY_ON  = LOW;
 const int RELAY_OFF = HIGH;
 ```
 
-Connect the pump through the relay's **COM** and **NO** contacts. Use a suitable external supply for the pump—never power a motor or pump directly from an ESP32 GPIO pin.
+Connect the humidifier through the relay's **COM** and **NO** contacts so it remains off until an RFID tag is detected. Use a suitable external supply for the humidifier—never power a motor or humidifier directly from an ESP32 GPIO pin.
+
+> [!CAUTION]
+> This guide assumes a **low-voltage DC humidifier or mist maker**. Do not wire a mains-powered appliance unless the system is designed and checked by a qualified person.
 
 ## 💻 Software Requirements
 
@@ -224,7 +227,7 @@ const unsigned long SEARCH_TIMEOUT = 5000;
 | `SLOW_SPEED` | Inner-wheel speed during a gentle turn |
 | `TURN_SPEED` | Outer-wheel speed during a gentle turn |
 | `HARD_TURN_SPEED` | Pivot-turn and line-recovery speed |
-| `RFID_ACTION_TIME` | Pump operating time in milliseconds |
+| `RFID_ACTION_TIME` | Humidifier operating time in milliseconds |
 | `CARD_REMOVED_TIME` | Required tag absence before another trigger |
 | `SEARCH_TIMEOUT` | Maximum lost-line search time |
 
@@ -250,17 +253,17 @@ Other mixed patterns are handled by checking whether the line appears on the lef
 | Lift the wheels and test movement | Both sides move in the correct direction |
 | Present an RFID card | Its UID prints once and the motors stop |
 | Keep the RFID card under the reader | It does not continuously retrigger |
-| Trigger the relay without water | Relay stays on for five seconds |
-| Connect the pump | Water flows and the ESP32 remains stable |
-| Run the complete route slowly | Robot stops and waters at every tag |
+| Trigger the relay with the humidifier disconnected | Relay stays on for five seconds |
+| Connect the humidifier | Mist is produced and the ESP32 remains stable |
+| Run the complete route slowly | Robot stops and activates the humidifier at every tag |
 
 ## 🛡️ Safety
 
-- Use a suitable separate power source for the motors and pump.
+- Use a suitable separate power source for the motors and humidifier.
 - Connect the ESP32, motor driver, RFID reader, and relay control circuit to a common ground.
-- Keep all electronics and battery connections protected from water.
-- Confirm that the relay's voltage and current ratings support the pump.
-- Add a flyback diode if the pump or relay board does not already provide protection.
+- Keep all electronics and battery connections protected from water and mist.
+- Confirm that the relay's voltage and current ratings support the humidifier.
+- Keep the humidifier outlet pointed away from the ESP32, RFID reader, motor driver, and battery.
 - Test the robot with its wheels lifted before placing it on the track.
 
 ## 🩺 Troubleshooting
@@ -296,26 +299,26 @@ Swap the `RELAY_ON` and `RELAY_OFF` values in the firmware.
 </details>
 
 <details>
-<summary><strong>The ESP32 restarts when the pump starts</strong></summary>
+<summary><strong>The ESP32 restarts when the humidifier starts</strong></summary>
 
 Use a properly rated separate supply, connect the grounds, and add electrical-noise protection.
 </details>
 
 ## 🌟 Future Improvements
 
-- Add a capacitive soil-moisture sensor
-- Water only when the soil is below a moisture threshold
-- Give different RFID tags different watering durations
+- Add a DHT11, DHT22, or another humidity sensor
+- Activate the humidifier only when humidity is below a configured threshold
+- Give different RFID tags different humidification durations
 - Replace the blocking five-second delay with non-blocking timing
-- Add a water-tank level sensor
+- Add a humidifier reservoir level sensor
 - Add Wi-Fi monitoring and a mobile dashboard
-- Store watering history and plant health information
+- Store humidity history and plant health information
 - Monitor battery voltage and support automatic charging
 
 ## 📁 Repository Structure
 
 ```text
-ESP32-Smart-Farming-Robot/
+ESP32-Smart-Farming-Humidifier-Robot/
 ├── smart_farming_robot.ino
 ├── README.md
 └── assets/
@@ -336,6 +339,6 @@ Add an open-source license such as the [MIT License](https://choosealicense.com/
 
 ### Built to make plant care smarter, simpler, and more reliable. 🌿
 
-**ESP32 • Robotics • RFID • Automated Watering**
+**ESP32 • Robotics • RFID • Automated Humidification**
 
 </div>
