@@ -1,70 +1,148 @@
-# ESP32 Smart Farming & Plant Watering Robot
+<div align="center">
 
-An autonomous smart-farming robot built with an **ESP32**. The robot follows a black line, detects plant locations using **RFID tags**, stops at each location, and activates a relay-controlled water pump for five seconds.
+# 🌱 ESP32 Smart Farming Robot
 
-## Features
+### An autonomous line-following robot that finds plants and waters them automatically
 
-- Follows a black line using five IR sensors
-- Adjusts motor speed for slight and sharp turns
-- Remembers its last turn when the line is lost
-- Searches for a lost line for up to five seconds
-- Detects watering locations using an RC522 RFID reader
-- Stops the robot before watering
-- Activates a relay and water pump for five seconds
-- Prevents one RFID card from triggering repeatedly while it remains under the reader
-- Prints sensor values, RFID UIDs, and robot status to the Serial Monitor
+<p>
+  <img src="https://img.shields.io/badge/Controller-ESP32-1B6B4A?style=for-the-badge" alt="ESP32">
+  <img src="https://img.shields.io/badge/Platform-Arduino-2F8F6B?style=for-the-badge" alt="Arduino">
+  <img src="https://img.shields.io/badge/Navigation-5_IR_Sensors-C9A227?style=for-the-badge" alt="5 IR Sensors">
+  <img src="https://img.shields.io/badge/Watering-RFID_Triggered-5A8F72?style=for-the-badge" alt="RFID Triggered">
+</p>
 
-> **Current watering method:** The supplied firmware starts watering when an RFID tag is detected. It does not currently read a humidity or soil-moisture sensor. Humidity-based watering is listed as a future improvement below.
+<p>
+  <a href="#-about-the-project">About</a> •
+  <a href="#-features">Features</a> •
+  <a href="#-how-it-works">How It Works</a> •
+  <a href="#-hardware">Hardware</a> •
+  <a href="#-wiring-guide">Wiring</a> •
+  <a href="#-installation">Installation</a> •
+  <a href="#-testing">Testing</a>
+</p>
 
-## How It Works
+</div>
 
-1. The five-channel IR sensor detects a black path on a white surface.
-2. The ESP32 controls the left and right motors through an L298N motor driver.
-3. The robot follows the line and corrects its direction based on the active IR sensors.
-4. An RFID tag placed near a plant marks a watering location.
-5. When the RC522 detects a tag, the robot:
-   - Stops both motors
-   - Prints the tag UID to the Serial Monitor
-   - Turns on the relay and water pump
-   - Waters the plant for five seconds
-   - Turns off the pump and resumes line following
-6. If the robot loses the line, it searches in the direction of its most recent turn for up to five seconds.
+---
 
-## Hardware Required
+## 🌾 About the Project
+
+This project is an **ESP32-powered smart farming robot** designed to automate plant watering. It follows a black path using five IR sensors and uses RFID tags to identify plant locations. When a tag is detected, the robot stops, activates a relay-controlled water pump for five seconds, and then continues along its route.
+
+The goal is to make routine plant care more efficient by combining robotics, navigation, location detection, and automated watering in one affordable system.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>🎯 Mission</h3>
+      <p>Build a simple, affordable robot that can navigate between plants and water them consistently with minimal human effort.</p>
+    </td>
+    <td width="50%" valign="top">
+      <h3>🔭 Vision</h3>
+      <p>Develop the robot into an intelligent farming assistant that uses soil-moisture data, plant-specific watering, and wireless monitoring.</p>
+    </td>
+  </tr>
+</table>
+
+> [!IMPORTANT]
+> The current firmware starts watering when an **RFID tag** is detected. It does not yet read a humidity or soil-moisture sensor. Moisture-based watering is included in the future improvements section.
+
+## ✨ Features
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>🛣️ Smart Navigation</h3>
+      <ul>
+        <li>Five-sensor black-line tracking</li>
+        <li>Gentle and sharp turn correction</li>
+        <li>Last-turn direction memory</li>
+        <li>Five-second lost-line search</li>
+      </ul>
+    </td>
+    <td width="50%" valign="top">
+      <h3>💧 Automatic Watering</h3>
+      <ul>
+        <li>RC522 RFID location detection</li>
+        <li>Automatic motor stop before watering</li>
+        <li>Relay-controlled five-second pump cycle</li>
+        <li>Duplicate RFID-trigger prevention</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>⚙️ Motor Control</h3>
+      <ul>
+        <li>Independent left and right motor control</li>
+        <li>Variable PWM speed</li>
+        <li>Forward and reverse movement</li>
+        <li>Pivot turns for sharp corners</li>
+      </ul>
+    </td>
+    <td width="50%" valign="top">
+      <h3>🖥️ Live Diagnostics</h3>
+      <ul>
+        <li>IR values in the Serial Monitor</li>
+        <li>RFID UID output</li>
+        <li>Relay and watering status</li>
+        <li>Lost-line and recovery messages</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+## 📊 Project at a Glance
+
+| **5** | **5 seconds** | **700 ms** | **115200** |
+|:---:|:---:|:---:|:---:|
+| IR sensors | Watering duration | RFID reset delay | Serial baud rate |
+
+## 🚜 How It Works
+
+1. **Scan the path** — five IR sensors continuously check for a black line on a white surface.
+2. **Follow the line** — the ESP32 adjusts the left and right motor speeds through the L298N driver.
+3. **Find a plant** — an RFID tag placed near each plant marks its watering location.
+4. **Stop safely** — RFID detection receives priority and immediately stops both motors.
+5. **Water the plant** — GPIO 32 activates the relay and pump for five seconds.
+6. **Resume the route** — the pump switches off and the robot continues line following.
+7. **Recover when lost** — if all sensors see white, the robot searches using its last known turn direction for up to five seconds.
+
+## 🔩 Hardware
 
 | Component | Quantity | Purpose |
-|---|---:|---|
+|---|:---:|---|
 | ESP32 development board | 1 | Main controller |
-| 5-channel IR line-tracking sensor | 1 | Detects the black path |
-| RC522 RFID reader | 1 | Detects plant watering points |
-| RFID cards or tags | As needed | Marks each plant location |
-| L298N motor driver | 1 | Controls the left and right motors |
+| Five-channel IR sensor array | 1 | Detects the black path |
+| RC522 RFID reader | 1 | Detects watering locations |
+| RFID cards or tags | As needed | Marks plant locations |
+| L298N motor driver | 1 | Drives the left and right motors |
 | DC geared motors | 2 or 4 | Moves the robot |
 | One-channel relay module | 1 | Switches the water pump |
-| Mini DC water pump | 1 | Waters the plants |
-| Water tube and container | 1 set | Stores and delivers water |
-| Robot chassis and wheels | 1 set | Mechanical platform |
-| Suitable external power supply | 1 | Powers the motors and pump |
-| Jumper wires | As needed | Electrical connections |
+| Mini DC water pump | 1 | Delivers water |
+| Water tank and tubing | 1 set | Stores and carries water |
+| Robot chassis and wheels | 1 set | Supports the system |
+| External power supply | 1 | Powers motors and pump |
+| Jumper wires | As needed | Makes electrical connections |
 
-## Pin Connections
+## 🔌 Wiring Guide
 
-### IR Line Sensor
+### IR Line Sensor → ESP32
 
-The firmware expects **black = LOW (0)** and **white = HIGH (1)**.
+The program expects **black = LOW (`0`)** and **white = HIGH (`1`)**.
 
 | Sensor output | Position | ESP32 GPIO |
-|---|---|---:|
+|---|---|:---:|
 | OUT1 | Far left | 36 |
 | OUT2 | Left | 39 |
 | OUT3 | Center | 34 |
 | OUT4 | Right | 35 |
 | OUT5 | Far right | 33 |
 
-### L298N Motor Driver
+### L298N Motor Driver → ESP32
 
 | L298N pin | Function | ESP32 GPIO |
-|---|---|---:|
+|---|---|:---:|
 | ENA | Left motor speed | 25 |
 | IN1 | Left motor direction | 26 |
 | IN2 | Left motor direction | 27 |
@@ -72,58 +150,62 @@ The firmware expects **black = LOW (0)** and **white = HIGH (1)**.
 | IN3 | Right motor direction | 17 |
 | IN4 | Right motor direction | 16 |
 
-Connect the left motor or motor pair to L298N **OUT1/OUT2** and the right motor or motor pair to **OUT3/OUT4**.
+- Connect the left motor or motor pair to **OUT1/OUT2**.
+- Connect the right motor or motor pair to **OUT3/OUT4**.
 
-### RC522 RFID Reader
+### RC522 RFID Reader → ESP32
 
-| RC522 pin | ESP32 GPIO |
-|---|---:|
-| SDA / SS | 5 |
-| SCK | 18 |
-| MOSI | 23 |
-| MISO | 19 |
-| RST | 4 |
+| RC522 pin | ESP32 connection |
+|---|:---:|
+| SDA / SS | GPIO 5 |
+| SCK | GPIO 18 |
+| MOSI | GPIO 23 |
+| MISO | GPIO 19 |
+| RST | GPIO 4 |
 | 3.3V | 3.3V |
 | GND | GND |
 
-> The RC522 is a **3.3 V device**. Do not power it from 5 V.
+> [!WARNING]
+> The RC522 is a **3.3 V device**. Do not connect its power pin to 5 V.
 
 ### Relay and Water Pump
 
 | Relay pin | Connection |
 |---|---|
 | IN | ESP32 GPIO 32 |
-| VCC | Module-rated supply voltage |
+| VCC | Supply voltage required by the relay module |
 | GND | Common ground |
 
 The firmware is configured for an **active-LOW relay**:
 
-- `LOW` turns the pump on
-- `HIGH` turns the pump off
+```cpp
+const int RELAY_ON  = LOW;
+const int RELAY_OFF = HIGH;
+```
 
-Wire the pump through the relay's **COM** and **NO** contacts so it remains off until watering begins. Power the pump from a suitable external supply; never power it directly from an ESP32 GPIO pin.
+Connect the pump through the relay's **COM** and **NO** contacts. Use a suitable external supply for the pump—never power a motor or pump directly from an ESP32 GPIO pin.
 
-## Software Requirements
+## 💻 Software Requirements
 
 - [Arduino IDE](https://www.arduino.cc/en/software) or PlatformIO
 - ESP32 board package for Arduino
-- `MFRC522` library
-- Built-in `SPI` library
+- [`MFRC522`](https://github.com/miguelbalboa/rfid) library
+- Built-in Arduino `SPI` library
 
-## Installation
+## 🚀 Installation
 
 1. Install the Arduino IDE.
-2. Add ESP32 board support in **Boards Manager**.
-3. Open **Library Manager** and install the library named `MFRC522`.
-4. Save the project code as `smart_farming_robot.ino`.
-5. Open the file in the Arduino IDE.
-6. Select your ESP32 board and its serial port.
+2. Install ESP32 board support from **Boards Manager**.
+3. Open **Library Manager** and install `MFRC522`.
+4. Save the program as `smart_farming_robot.ino`.
+5. Open it in the Arduino IDE.
+6. Select the correct ESP32 board and serial port.
 7. Compile and upload the firmware.
-8. Open the Serial Monitor and set the baud rate to **115200**.
+8. Open the Serial Monitor at **115200 baud**.
 
-## Configuration
+## 🧰 Configuration
 
-The main values can be adjusted near the top of the sketch:
+Adjust these values near the top of the sketch to tune the robot:
 
 ```cpp
 const int BASE_SPEED = 160;
@@ -139,83 +221,121 @@ const unsigned long SEARCH_TIMEOUT = 5000;
 | Setting | Purpose |
 |---|---|
 | `BASE_SPEED` | Normal forward speed |
-| `SLOW_SPEED` | Inner-wheel speed for gentle turns |
-| `TURN_SPEED` | Outer-wheel speed for gentle turns |
-| `HARD_TURN_SPEED` | Speed used for pivot turns and line recovery |
-| `RFID_ACTION_TIME` | Watering duration in milliseconds |
-| `CARD_REMOVED_TIME` | Time the tag must be absent before it may trigger again |
-| `SEARCH_TIMEOUT` | Maximum time spent searching for a lost line |
+| `SLOW_SPEED` | Inner-wheel speed during a gentle turn |
+| `TURN_SPEED` | Outer-wheel speed during a gentle turn |
+| `HARD_TURN_SPEED` | Pivot-turn and line-recovery speed |
+| `RFID_ACTION_TIME` | Pump operating time in milliseconds |
+| `CARD_REMOVED_TIME` | Required tag absence before another trigger |
+| `SEARCH_TIMEOUT` | Maximum lost-line search time |
 
-## Line Sensor Behaviour
+## 🧭 Line Sensor Behaviour
 
 | Sensor pattern | Robot action |
-|---|---|
+|:---:|---|
 | `1 1 0 1 1` | Move forward |
 | `1 0 1 1 1` | Turn slightly left |
 | `0 1 1 1 1` | Turn hard left |
 | `1 1 1 0 1` | Turn slightly right |
 | `1 1 1 1 0` | Turn hard right |
-| `1 1 1 1 1` | Search using the last known turn direction |
+| `1 1 1 1 1` | Search using the last turn direction |
 | `0 0 0 0 0` | Stop |
 
 Other mixed patterns are handled by checking whether the line appears on the left or right side.
 
-## Testing
+## 🧪 Testing
 
-Test each subsystem before running the complete robot:
-
-1. **IR sensors:** Move a black line under each sensor and check the five values in the Serial Monitor.
-2. **Motors:** Lift the wheels off the ground and verify that forward, left, and right directions are correct.
-3. **RFID:** Present a card and confirm that its UID is printed only once until the card is removed.
-4. **Relay:** Test the relay without water and confirm that it turns on for five seconds.
-5. **Pump:** Connect the pump and verify water flow, tubing, and power stability.
-6. **Full route:** Place RFID tags at plant locations and test the complete track at a low speed first.
-
-## Safety Notes
-
-- Use a separate suitable power source for motors and the pump.
-- Connect the ESP32, motor driver, RFID reader, and relay control circuit to a common ground.
-- Keep the ESP32, motor driver, battery connections, and other electronics away from water.
-- Check that the relay's voltage and current ratings are suitable for the pump.
-- Add a flyback diode if the pump or relay module does not already include the required protection.
-- Do not connect motor or pump power directly to an ESP32 pin.
-
-## Troubleshooting
-
-| Problem | Things to check |
+| Test | Expected result |
 |---|---|
-| Robot turns in the wrong direction | Swap the affected motor wires or correct its direction pins |
-| IR readings are reversed | Calibrate the sensor board or update the black/white logic |
-| Robot loses the line frequently | Reduce speed, adjust sensor height, and tune the sensor sensitivity |
-| RFID card is not detected | Check 3.3 V power, SPI wiring, and the `MFRC522` library |
-| Relay works in reverse | Swap the `RELAY_ON` and `RELAY_OFF` values in the sketch |
-| ESP32 restarts when the pump starts | Use a separate adequate supply, common ground, and electrical noise protection |
-| Pump does not run | Check relay COM/NO wiring, pump voltage, power supply current, and tubing |
+| Move a black line under each IR sensor | Serial Monitor values change correctly |
+| Lift the wheels and test movement | Both sides move in the correct direction |
+| Present an RFID card | Its UID prints once and the motors stop |
+| Keep the RFID card under the reader | It does not continuously retrigger |
+| Trigger the relay without water | Relay stays on for five seconds |
+| Connect the pump | Water flows and the ESP32 remains stable |
+| Run the complete route slowly | Robot stops and waters at every tag |
 
-## Future Improvements
+## 🛡️ Safety
 
-- Add a capacitive soil-moisture sensor at the watering nozzle
-- Water only when soil moisture is below a configured threshold
+- Use a suitable separate power source for the motors and pump.
+- Connect the ESP32, motor driver, RFID reader, and relay control circuit to a common ground.
+- Keep all electronics and battery connections protected from water.
+- Confirm that the relay's voltage and current ratings support the pump.
+- Add a flyback diode if the pump or relay board does not already provide protection.
+- Test the robot with its wheels lifted before placing it on the track.
+
+## 🩺 Troubleshooting
+
+<details>
+<summary><strong>The robot moves or turns in the wrong direction</strong></summary>
+
+Swap the affected motor wires or correct that motor's direction pins in the firmware.
+</details>
+
+<details>
+<summary><strong>The IR readings are reversed</strong></summary>
+
+Calibrate the sensor board or update the firmware's black/white logic.
+</details>
+
+<details>
+<summary><strong>The robot frequently loses the line</strong></summary>
+
+Reduce the motor speeds, adjust the IR sensor height, and tune the sensor sensitivity.
+</details>
+
+<details>
+<summary><strong>The RC522 cannot detect a tag</strong></summary>
+
+Check the 3.3 V supply, SPI wiring, and `MFRC522` library installation.
+</details>
+
+<details>
+<summary><strong>The relay operates in reverse</strong></summary>
+
+Swap the `RELAY_ON` and `RELAY_OFF` values in the firmware.
+</details>
+
+<details>
+<summary><strong>The ESP32 restarts when the pump starts</strong></summary>
+
+Use a properly rated separate supply, connect the grounds, and add electrical-noise protection.
+</details>
+
+## 🌟 Future Improvements
+
+- Add a capacitive soil-moisture sensor
+- Water only when the soil is below a moisture threshold
+- Give different RFID tags different watering durations
 - Replace the blocking five-second delay with non-blocking timing
-- Add a water-level sensor to the tank
+- Add a water-tank level sensor
 - Add Wi-Fi monitoring and a mobile dashboard
-- Record watering history and plant status
-- Add battery-voltage monitoring and automatic charging
-- Use individual RFID UIDs to assign different watering times to different plants
+- Store watering history and plant health information
+- Monitor battery voltage and support automatic charging
 
-## Project Structure
+## 📁 Repository Structure
 
 ```text
 ESP32-Smart-Farming-Robot/
 ├── smart_farming_robot.ino
 ├── README.md
-└── images/                 # Optional project photos and wiring diagram
+└── assets/
+    └── images/              # Optional project photos and wiring diagrams
 ```
 
-## License
+## 🤝 Contributing
 
-You may add an open-source license such as the MIT License before publishing or accepting contributions.
+Suggestions and improvements are welcome. Fork the repository, create a feature branch, commit your changes, and open a pull request.
+
+## 📄 License
+
+Add an open-source license such as the [MIT License](https://choosealicense.com/licenses/mit/) before accepting contributions.
 
 ---
 
-Built for automated plant care using robotics, RFID, and the ESP32.
+<div align="center">
+
+### Built to make plant care smarter, simpler, and more reliable. 🌿
+
+**ESP32 • Robotics • RFID • Automated Watering**
+
+</div>
